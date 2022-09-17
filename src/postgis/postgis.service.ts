@@ -15,4 +15,10 @@ export class PostgisService {
   findAllPostgisData(): Observable<PostgisEntity[]> {
     return from(this.postgisRepository.find());
   }
+
+  createPointOnMap(
+    postgisInterface: PostgisInterface,
+  ): Observable<PostgisInterface> {
+    return from(this.postgisRepository.save(postgisInterface));
+  }
 }
