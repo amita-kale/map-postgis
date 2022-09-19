@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { from, Observable } from 'rxjs';
 import { PostgisEntity } from 'src/model/postgis.entity';
 import { PostgisInterface } from 'src/model/postgis.interface';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class PostgisService {
@@ -20,5 +20,9 @@ export class PostgisService {
     postgisInterface: PostgisInterface,
   ): Observable<PostgisInterface> {
     return from(this.postgisRepository.save(postgisInterface));
+  }
+
+  deletePost(id: number): Observable<DeleteResult> {
+    return from(this.postgisRepository.delete(id));
   }
 }
