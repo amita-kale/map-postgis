@@ -1,4 +1,5 @@
-import { Point } from 'geojson';
+import { IsOptional } from 'class-validator';
+import { Point, Polygon } from 'geojson';
 
 export interface PostgisInterface {
   Id?: number;
@@ -10,5 +11,7 @@ export interface PostgisInterface {
   Name?: string;
 
   City_Name?: string;
+  //Geometry?: 'GeoJSON';
   geom?: Point;
+  // polygon?: number[][];
 }

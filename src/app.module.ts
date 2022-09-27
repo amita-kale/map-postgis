@@ -4,6 +4,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PolygonEntity } from './model/polygon.entity';
 import { PostgisModule } from './postgis/postgis.module';
 
 @Module({
@@ -20,6 +21,7 @@ import { PostgisModule } from './postgis/postgis.module';
       synchronize: true,
     }),
     PostgisModule,
+    // PolygonEntity,
     // MulterModule.register({ dest: './uploads' }),
   ],
   controllers: [AppController],
