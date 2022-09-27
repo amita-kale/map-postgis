@@ -20,10 +20,14 @@ import { PostgisService } from './postgis.service';
 import { parse } from 'papaparse';
 import { PostgisEntity } from 'src/model/postgis.entity';
 import { Point } from 'geojson';
+import { PolygonEntity } from 'src/model/polygon.entity';
 
 @Controller('postgis')
 export class PostgisController {
   constructor(private readonly postgisService: PostgisService) {}
+  path: string;
+  csvpath: string;
+
   @Get() findAll(): Observable<PostgisInterface[]> {
     return this.postgisService.findAllPostgisData();
   }
@@ -33,7 +37,15 @@ export class PostgisController {
     return res.sendFile(csv, { root: './uploads' });
   }
 
-  @Post() create(
+  // @Post('polygon')
+  // async createParcelPoint(
+  //   @Body()
+  //   createdata,
+  // ): Promise<any> {
+  //   return this.postgisService.createPolygon(createdata);
+  // }
+
+  @Post() createPoint(
     @Body() postgisInterface: PostgisInterface,
   ): Observable<PostgisInterface> {
     return this.postgisService.createPointOnMap(postgisInterface);
@@ -58,36 +70,44 @@ export class PostgisController {
       }),
     }),
   )
-  async uploadFile() {
-    var dataObject = [];
-    const csvFile = readFileSync('uploads/postgis.csv');
-    const csvData = csvFile.toString();
-    const parsedCsv = await parse(csvData, {
-      header: true,
-      skipEmptyLines: true,
-      //  transformHeader:(header)=> header.toLowerCase().replace('#', '').trim(),
-      complete: (results) => results.data,
-    });
+  async uploadCsv(@UploadedFile() file) {
+    this.postgisService.saveFile(file);
+    console.log('file data', file);
 
-    console.log('csv file', parsedCsv.data);
-    dataObject = parsedCsv.data;
-    dataObject.filter((element) => {
-      var geom: Point = {
-        type: 'Point',
-        coordinates: [element.long, element.lat],
-      };
-      console.log('objects', element);
-      let entityObject = new PostgisEntity();
-      entityObject.Lat = element.lat;
-      entityObject.Long = element.long;
-      entityObject.Name = element.Name;
-      entityObject.City_Name = element.City_Name;
-      entityObject.geom = geom;
-      console.log('entityObject', entityObject);
-
-      return this.postgisService.createPointOnMap(entityObject);
-    });
+    return 'File uploaded successfully';
   }
+  // async uploadFile() {
+  //   var dataObject = [];
+  //   const csvFile = readFileSync(`uploads/postgis.csv`);
+  //   const csvData = csvFile.toString();
+  //   const parsedCsv = await parse(csvData, {
+  //     header: true,
+  //     skipEmptyLines: true,
+  //     //  transformHeader:(header)=> header.toLowerCase().replace('#', '').trim(),
+  //     complete: (results) => results.data,
+  //   });
+
+  //   console.log('csv file', parsedCsv.data);
+  //   dataObject = parsedCsv.data;
+  //   dataObject.filter((element) => {
+  //     var geom: Point = {
+  //       type: 'Point',
+  //       coordinates: [element.long, element.lat],
+  //     };
+  //     console.log('objects', element);
+
+  // let entityObject = new PostgisEntity();
+  // entityObject.Lat = element.lat;
+  // entityObject.Long = element.long;
+  // entityObject.Name = element.Name;
+  // entityObject.City_Name = element.City_Name;
+  // entityObject.geom = geom;
+  // console.log('entityObject', entityObject);
+
+  // return this.postgisService.createPointOnMap(entityObject);
+  //   });
+  // }
+
   // handleUpload(@UploadedFile() file: Express.Multer.File) {
   //   console.log('file', file);
   //   return 'File upload API';
